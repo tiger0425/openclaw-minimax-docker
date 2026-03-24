@@ -1,9 +1,20 @@
 services:
+  workspace-fix:
+    image: alpine:latest
+    container_name: openclaw-workspace-fix
+    user: root
+    volumes:
+      - openclaw_workspace:/workspace
+    command: ["sh", "-lc", "chown -R 1000:1000 /workspace"]
+
   openclaw-gateway:
     build: .
     image: openclaw-minimax-ssh:latest
     container_name: openclaw-main
     restart: unless-stopped
+    depends_on:
+      workspace-fix:
+        condition: service_completed_successfully
     init: true
     environment:
       TZ: Asia/Shanghai
