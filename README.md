@@ -27,6 +27,7 @@ docker compose up -d --build
 ## 主要配置
 
 - `.env`：存放 MiniMax、飞书和 OpenClaw Token
+- `.env.example`：环境变量示例，复制后改成自己的值
 - `docker-compose.yml`：容器编排
 - `Dockerfile`：补齐 SSH、Chromium 和中文字体
 - `openclaw_data/openclaw.json`：OpenClaw 配置
