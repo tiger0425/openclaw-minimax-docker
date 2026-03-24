@@ -24,6 +24,37 @@ docker compose up -d --build
 
 浏览器和飞书功能会随容器一起启动。
 
+## 远程部署
+
+如果要部署到服务器上，可以按下面步骤执行：
+
+```bash
+git clone https://github.com/tiger0425/openclaw-minimax-docker.git
+cd openclaw-minimax-docker
+cp .env.example .env
+```
+
+然后编辑 `.env`，填入自己的：
+
+- `MINIMAX_API_KEY`
+- `LARK_APP_ID`
+- `LARK_APP_SECRET`
+- `OPENCLAW_GATEWAY_TOKEN`
+
+最后启动：
+
+```bash
+docker compose up -d --build
+```
+
+访问地址：
+
+```text
+http://服务器IP:18789/#token=你的OPENCLAW_GATEWAY_TOKEN
+```
+
+如果只想内网访问，请不要对公网放行这些端口。
+
 ## 主要配置
 
 - `.env`：存放 MiniMax、飞书和 OpenClaw Token
