@@ -55,6 +55,12 @@ http://服务器IP:18789/#token=你的OPENCLAW_GATEWAY_TOKEN
 
 如果只想内网访问，请不要对公网放行这些端口。
 
+### 远程部署权限说明
+
+如果首次启动时出现 `EACCES: permission denied, open '/home/node/.openclaw/workspace/AGENTS.md'`，通常是 workspace 卷里的文件属主不正确。
+
+当前 compose 已加入启动前自动修复步骤，会先把 workspace 卷的属主调整为 `1000:1000`，再启动 OpenClaw。
+
 ## 主要配置
 
 - `.env`：存放 MiniMax、飞书和 OpenClaw Token
