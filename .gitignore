@@ -1,0 +1,82 @@
+# 环境变量和密钥
+.env
+.env.local
+.env.*.local
+
+# OpenClaw 运行时数据（包含会话、缓存等）
+openclaw-minimax-docker/openclaw_data/agents/
+openclaw-minimax-docker/openclaw_data/browser/
+openclaw-minimax-docker/openclaw_data/canvas/
+openclaw-minimax-docker/openclaw_data/credentials/
+openclaw-minimax-docker/openclaw_data/extensions/
+openclaw-minimax-docker/openclaw_data/sessions/
+openclaw-minimax-docker/openclaw_data/workspace/
+
+# 浏览器运行时锁文件
+SingletonCookie
+SingletonLock
+SingletonSocket
+
+# Chrome 运行时数据
+**/SingletonCookie
+**/SingletonLock
+**/SingletonSocket
+*.log
+**/*.log
+LOG
+LOG.old
+CURRENT
+LOCK
+*.ldb
+
+# SSH 密钥（如果放在项目目录里）
+ssh/id_*
+ssh/*.pem
+ssh/*.key
+
+# 日志文件
+*.log
+logs/
+
+# Docker 相关
+.dockerignore
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 工作目录和子模块
+workspace/
+.gitmodules
+remote-repo.git/
+
+# 运行时生成的 JSON 数据（排除，但保留主配置）
+openclaw-minimax-docker/openclaw_data/cron/
+openclaw-minimax-docker/openclaw_data/devices/
+openclaw-minimax-docker/openclaw_data/feishu/
+openclaw-minimax-docker/openclaw_data/identity/
+# 注意：openclaw.json 是主配置，使用 -f 添加
+openclaw-minimax-docker/openclaw_data/*.bak
+openclaw-minimax-docker/openclaw_data/update-check.json
+# 排除其他运行时 JSON，但保留 openclaw.json 模板
+openclaw-minimax-docker/openclaw_data/agents/**/*.json
+openclaw-minimax-docker/openclaw_data/browser/**/*.json
+openclaw-minimax-docker/openclaw_data/media/
+openclaw-minimax-docker/openclaw_data/memory/
