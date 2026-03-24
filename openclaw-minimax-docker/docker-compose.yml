@@ -18,8 +18,8 @@ services:
       LARK_APP_SECRET: ${LARK_APP_SECRET}
     volumes:
       - ./openclaw_data:/home/node/.openclaw
-      - ./workspace:/home/node/.openclaw/workspace
       - ${HOME}/.ssh:/home/node/.ssh:ro
+      - openclaw_workspace:/home/node/.openclaw/workspace
     ports:
       - "18789:18789"
       - "18790:18790"
@@ -32,3 +32,6 @@ services:
     network_mode: "service:openclaw-gateway"
     restart: unless-stopped
     shm_size: "2g"
+
+volumes:
+  openclaw_workspace:
