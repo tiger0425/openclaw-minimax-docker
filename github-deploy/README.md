@@ -1,74 +1,137 @@
-# OpenClaw v2026.3.23 生产部署仓库（飞书专用）
+# OpenClaw v2026.3.23 云服务器部署包说明
 
-## 🚀 快速部署
+这个目录用于存放 **云服务器部署所需的脚本、配置和说明文件**，适合配合 `openclaw20260323/` 导出的镜像一起交付或上传到服务器。
 
-### 1. 服务器准备
+## 这个目录的用途
+
+适用场景：
+- 将 OpenClaw v2026.3.23 部署到云服务器
+- 面向飞书 WebSocket 模式运行
+- 将部署包交给其他人按文档执行
+
+这个目录本身**不包含 Docker 镜像压缩包**，镜像文件需要从 `openclaw20260323/` 目录单独导出。
+
+## 目录内容
+
+当前目录包含：
+
+- `.env.example`：环境变量模板
+- `.gitignore`：忽略规则
+- `docker-compose.yml`：服务器部署编排文件
+- `deploy.sh`：部署脚本
+- `export-image.sh`：镜像导出脚本（如在本目录维护镜像导出流程时使用）
+- `openclaw.json`：OpenClaw 配置模板
+- `README.md`：快速部署说明
+- `DEPLOY-GUIDE.md`：完整部署指南
+
+## 部署前需要准备什么
+
+### 1. 本目录中的部署文件
+也就是当前 `github-deploy/` 目录里的文件。
+
+### 2. OpenClaw v2026.3.23 镜像压缩包
+当前推荐先在 `openclaw20260323/` 目录中生成，与测试环境目录保持一致：
 
 ```bash
-# 安装 Docker
-curl -fsSL https://get.docker.com | sh
-systemctl enable docker && systemctl start docker
-
-# 安装 Docker Compose
-docker compose version || apt-get install -y docker-compose-plugin
+cd openclaw20260323
+./export-image.sh
 ```
 
-### 2. 下载部署文件
+生成文件示例：
 
 ```bash
-# 克隆仓库
-git clone https://github.com/YOUR_USERNAME/openclaw-deploy.git
-cd openclaw-deploy
+openclaw-v2026.3.23.tar.gz
+```
 
-# 创建环境变量文件
+## 快速部署流程
+
+### 第一步：准备本地文件
+
+在仓库根目录执行：
+
+```bash
+cd openclaw20260323
+./export-image.sh
+```
+
+然后确认以下两部分内容都已准备好：
+
+1. `github-deploy/` 目录
+2. `openclaw-v2026.3.23.tar.gz` 镜像文件
+
+### 第二步：上传到服务器
+
+可将部署目录和镜像上传到服务器，例如：
+
+```bash
+scp -r github-deploy root@你的服务器IP:/root/openclaw-deploy
+scp openclaw20260323/openclaw-v2026.3.23.tar.gz root@你的服务器IP:/root/openclaw-deploy/
+```
+
+### 第三步：在服务器上部署
+
+登录服务器后执行：
+
+```bash
+cd /root/openclaw-deploy
 cp .env.example .env
-vim .env  # 编辑你的配置
+vim .env
 ```
 
-### 3. 导入镜像（需要提前上传）
+至少需要填写：
+
+- `OPENCLAW_GATEWAY_TOKEN`
+- `LARK_APP_ID`
+- `LARK_APP_SECRET`
+- `MINIMAX_API_KEY`（如使用 MiniMax）
+
+然后导入镜像并启动：
 
 ```bash
-# 从本地上传镜像到服务器
-# scp openclaw-v2026.3.23.tar.gz root@服务器IP:/root/openclaw-deploy/
-
-# 在服务器上导入
 gunzip -c openclaw-v2026.3.23.tar.gz | docker load
-```
-
-### 4. 启动服务
-
-```bash
 chmod +x deploy.sh
 ./deploy.sh
 ```
 
-## 📁 文件说明
+## 最小必备文件
 
-| 文件 | 说明 |
-|------|------|
-| `docker-compose.yml` | 生产环境配置 |
-| `deploy.sh` | 自动部署脚本 |
-| `.env.example` | 环境变量模板 |
-| `setup-firewall.sh` | 防火墙配置 |
+如果只按最精简方式部署，服务器上至少需要这些文件：
 
-## 🔒 安全说明
+```text
+openclaw-deploy/
+├── .env.example
+├── docker-compose.yml
+├── deploy.sh
+├── openclaw.json
+└── openclaw-v2026.3.23.tar.gz
+```
 
-- 不暴露任何公网端口
-- 飞书通过 WebSocket 主动连接
-- Token 通过 .env 传入，不提交到 GitHub
+## 部署完成后如何验证
 
-## 📝 配置说明
-
-编辑 `.env` 文件：
+在服务器上执行：
 
 ```bash
-# 自动生成强 Token
-OPENCLAW_GATEWAY_TOKEN=xxx...
-
-# 飞书配置（必填）
-LARK_APP_ID=cli_xxx
-LARK_APP_SECRET=xxx
-
-# MiniMax（可选）
-MINIMAX_API_KEY=xxx
+docker ps
+docker logs -f openclaw-gateway
 ```
+
+正常情况下应看到：
+- 容器已启动
+- 飞书 WebSocket 已连接
+
+## 安全说明
+
+- 当前配置默认**不暴露公网端口**
+- 飞书通过 WebSocket 主动连接服务
+- 真实 `.env` 不要提交到仓库
+- 私钥、运行数据目录、镜像压缩包不要提交到仓库
+
+## 文档分工
+
+- `README.md`：适合快速查看和直接执行
+- `DEPLOY-GUIDE.md`：适合完整交付、排障和详细部署说明
+
+如果你需要更完整的部署过程、故障排查和服务器操作说明，请继续看：
+
+- `DEPLOY-GUIDE.md`
+- `../openclaw20260323/DEPLOY.md`
