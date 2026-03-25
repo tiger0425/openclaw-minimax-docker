@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.3.23",
+    "lastTouchedAt": "2026-03-24T00:00:00.000Z"
+  },
+  "browser": {
+    "enabled": true,
+    "headless": true,
+    "noSandbox": true,
+    "attachOnly": false,
+    "defaultProfile": "openclaw",
+    "executablePath": "/usr/bin/chromium",
+    "ssrfPolicy": {
+      "dangerouslyAllowPrivateNetwork": true
+    },
+    "profiles": {
+      "openclaw": {
+        "cdpPort": 18800,
+        "color": "#FF4500"
+      },
+      "browserless": {
+        "cdpUrl": "http://127.0.0.1:9222",
+        "color": "#00AA00"
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "minimax-direct": {
+        "baseUrl": "https://api.minimaxi.com/anthropic",
+        "apiKey": "${MINIMAX_API_KEY}",
+        "auth": "api-key",
+        "api": "anthropic-messages",
+        "authHeader": true,
+        "models": [
+          {
+            "id": "MiniMax-M2.7-highspeed",
+            "name": "MiniMax M2.7 HighSpeed"
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "minimax-direct/MiniMax-M2.7-highspeed"
+      },
+      "workspace": "/home/node/.openclaw/workspace",
+      "sandbox": {
+        "mode": "off"
+      }
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "channels": {
+    "feishu": {
+      "enabled": true,
+      "domain": "feishu",
+      "appId": "${LARK_APP_ID}",
+      "appSecret": "${LARK_APP_SECRET}",
+      "connectionMode": "websocket",
+      "dmPolicy": "open",
+      "allowFrom": [
+        "*"
+      ],
+      "groupPolicy": "open",
+      "requireMention": false,
+      "streaming": true,
+      "footer": {
+        "elapsed": true,
+        "status": true
+      }
+    }
+  },
+  "gateway": {
+    "mode": "local"
+  },
+  "plugins": {
+    "entries": {
+      "feishu": {
+        "enabled": true
+      }
+    }
+  }
+}
