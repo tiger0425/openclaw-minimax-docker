@@ -43,21 +43,25 @@
 - `export-image.sh`：导出镜像脚本
 
 ### `github-deploy/`
-云服务器部署包目录，适合把部署文件单独上传到服务器使用。
+云服务器部署包目录，配合阿里云容器镜像服务快速部署到国内服务器。
 
 适用场景：
-- 服务器部署
+- 服务器部署（国内推荐）
 - 飞书专用生产环境
-- 将镜像文件与部署脚本一起交付他人
+- 无需上传大文件，自动从阿里云拉取镜像
+
+镜像地址：
+```
+registry.cn-shenzhen.aliyuncs.com/yihuzh/openclaw:v2026.3.23
+```
 
 目录内主要文件：
 - `README.md`：快速部署说明
 - `DEPLOY-GUIDE.md`：完整部署指南
 - `.env.example`：环境变量模板
-- `docker-compose.yml`：生产部署编排
-- `deploy.sh`：部署脚本
-- `export-image.sh`：镜像导出脚本
-- `openclaw.json`：运行配置模板
+- `docker-compose.yml`：生产部署编排（使用阿里云镜像）
+- `deploy.sh`：部署脚本（自动拉取镜像）
+- `openclaw.json`：OpenClaw 配置模板
 
 ## 如何选择
 
@@ -83,21 +87,29 @@ docker compose up -d --build
 
 - `openclaw20260323/README.md`
 
-### 3. 部署到云服务器
-优先参考：
+### 3. 部署到云服务器（推荐）
+使用阿里云容器镜像服务，国内访问速度快，无需上传大文件。
 
-- `github-deploy/README.md`
-- `github-deploy/DEPLOY-GUIDE.md`
-- `openclaw20260323/DEPLOY.md`
-
-如果需要导出 v2026.3.23 镜像，先进入：
+**快速部署：**
 
 ```bash
-cd openclaw20260323
-./export-image.sh
+# 1. 上传部署文件到服务器
+scp -r github-deploy root@你的服务器IP:/root/openclaw-deploy
+
+# 2. 在服务器上配置并启动
+ssh root@你的服务器IP
+cd /root/openclaw-deploy
+cp .env.example .env
+vim .env  # 填入配置
+./deploy.sh  # 自动从阿里云拉取镜像并启动
 ```
 
-然后再结合 `github-deploy/` 中的部署文件上传到服务器。
+**详细说明：**
+- `github-deploy/README.md` - 快速部署指南
+- `github-deploy/DEPLOY-GUIDE.md` - 完整部署和排障指南
+
+**如需本地导出镜像（备用方案）：**
+在 `openclaw20260323/` 目录中使用 `export-image.sh` 导出后上传。
 
 ## 环境变量说明
 
