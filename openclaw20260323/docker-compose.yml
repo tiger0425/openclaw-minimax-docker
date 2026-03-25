@@ -1,0 +1,55 @@
+services:
+  workspace-fix:
+    image: alpine:latest
+    container_name: openclaw20260323-workspace-fix
+    user: root
+    volumes:
+      - openclaw20260323_workspace:/workspace
+    command: ["sh", "-lc", "chown -R 1000:1000 /workspace"]
+
+  openclaw-gateway:
+    image: openclaw:v2026.3.23
+    container_name: openclaw20260323-gateway
+    restart: unless-stopped
+    depends_on:
+      workspace-fix:
+        condition: service_completed_successfully
+    init: true
+    environment:
+      TZ: Asia/Shanghai
+      NODE_ENV: production
+      HOME: /home/node
+      TERM: xterm-256color
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
+      OPENCLAW_ALLOW_INSECURE_PRIVATE_WS: "true"
+      PATH: "/home/node/.openclaw/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      # 可选：MiniMax
+      MINIMAX_API_KEY: ${MINIMAX_API_KEY:-}
+      # 可选：飞书
+      LARK_APP_ID: ${LARK_APP_ID:-}
+      LARK_APP_SECRET: ${LARK_APP_SECRET:-}
+      # 可选：其他模型
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    volumes:
+      - ./openclaw_data:/home/node/.openclaw
+      - ${HOME}/.ssh:/home/node/.ssh:ro
+      - openclaw20260323_workspace:/home/node/.openclaw/workspace
+    ports:
+      # 独立的端口，避免与主环境冲突
+      - "18889:18889"
+      - "18890:18890"
+      - "19222:19222"
+    # 覆盖默认命令：绑定到所有接口，使用指定端口，允许未配置模式
+    command: ["node", "openclaw.mjs", "gateway", "--bind", "lan", "--port", "18889", "--allow-unconfigured"]
+
+  headless-shell:
+    image: chromedp/headless-shell:latest
+    container_name: openclaw20260323-headless-shell
+    network_mode: "service:openclaw-gateway"
+    restart: unless-stopped
+    shm_size: "2g"
+
+volumes:
+  openclaw20260323_workspace:
+    name: openclaw20260323_workspace

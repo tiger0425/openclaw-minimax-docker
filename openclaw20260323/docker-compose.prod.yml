@@ -1,0 +1,57 @@
+# OpenClaw v2026.3.23 生产环境配置（飞书专用）
+# 安全加固：不暴露公网端口，仅用于飞书 WebSocket 对接
+
+services:
+  workspace-fix:
+    image: alpine:latest
+    container_name: openclaw-workspace-fix
+    user: root
+    volumes:
+      - openclaw_workspace:/workspace
+    command: ["sh", "-lc", "chown -R 1000:1000 /workspace"]
+
+  openclaw-gateway:
+    image: openclaw:v2026.3.23
+    container_name: openclaw-gateway
+    restart: unless-stopped
+    depends_on:
+      workspace-fix:
+        condition: service_completed_successfully
+    init: true
+    environment:
+      TZ: Asia/Shanghai
+      NODE_ENV: production
+      HOME: /home/node
+      TERM: xterm-256color
+      # ✅ 强 Token，通过 .env 传入
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
+      # ✅ 不暴露不安全 WebSocket
+      # OPENCLAW_ALLOW_INSECURE_PRIVATE_WS: "true"
+      PATH: "/home/node/.openclaw/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      # 飞书配置（必需）
+      LARK_APP_ID: ${LARK_APP_ID}
+      LARK_APP_SECRET: ${LARK_APP_SECRET}
+      # MiniMax 配置（可选）
+      MINIMAX_API_KEY: ${MINIMAX_API_KEY:-}
+      # 其他模型（可选）
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    volumes:
+      - ./openclaw_data:/home/node/.openclaw
+      - openclaw_workspace:/home/node/.openclaw/workspace
+    # ✅ 不暴露公网端口！飞书通过 WebSocket 主动连接
+    # ports:
+    #   - "18889:18889"
+    # 绑定到 localhost，只允许本地访问
+    command: ["node", "openclaw.mjs", "gateway", "--bind", "127.0.0.1", "--port", "18889", "--allow-unconfigured"]
+
+  headless-shell:
+    image: chromedp/headless-shell:latest
+    container_name: openclaw-headless-shell
+    network_mode: "service:openclaw-gateway"
+    restart: unless-stopped
+    shm_size: "2g"
+
+volumes:
+  openclaw_workspace:
+    name: openclaw_workspace
