@@ -1,5 +1,6 @@
 # OpenClaw v2026.3.23 生产环境配置（飞书专用）
 # 安全加固：不暴露公网端口，仅用于飞书 WebSocket 对接
+# 镜像来源：阿里云容器镜像服务 ACR（深圳节点）
 
 services:
   workspace-fix:
@@ -11,7 +12,7 @@ services:
     command: ["sh", "-lc", "chown -R 1000:1000 /workspace"]
 
   openclaw-gateway:
-    image: openclaw:v2026.3.23
+    image: registry.cn-shenzhen.aliyuncs.com/yihuzh/openclaw:v2026.3.23
     container_name: openclaw-gateway
     restart: unless-stopped
     depends_on:

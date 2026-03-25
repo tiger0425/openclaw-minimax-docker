@@ -1,6 +1,7 @@
 #!/bin/bash
 # OpenClaw v2026.3.23 生产环境部署脚本（飞书专用）
 # 使用方法：./deploy.sh
+# 镜像来源：阿里云容器镜像服务 ACR（深圳节点）
 
 set -e
 
@@ -101,17 +102,18 @@ else
 fi
 echo ""
 
-# 检查镜像是否存在
-if ! docker image inspect openclaw:v2026.3.23 &> /dev/null; then
-    echo -e "${YELLOW}⚠️  镜像 openclaw:v2026.3.23 不存在${NC}"
-    echo "请在本地构建后上传，或从其他服务器导入："
-    echo "  docker save openclaw:v2026.3.23 | gzip > openclaw-v2026.3.23.tar.gz"
-    echo "  # 上传到服务器后"
-    echo "  gunzip -c openclaw-v2026.3.23.tar.gz | docker load"
-    exit 1
-fi
+# 检查镜像是否存在，不存在则自动拉取
+echo "🔍 检查镜像..."
+IMAGE_NAME="registry.cn-shenzhen.aliyuncs.com/yihuzh/openclaw:v2026.3.23"
 
-echo -e "${GREEN}✅ 镜像已存在${NC}"
+if ! docker image inspect "$IMAGE_NAME" &> /dev/null; then
+    echo -e "${YELLOW}⚠️  镜像不存在，正在从阿里云拉取...${NC}"
+    echo "镜像地址: $IMAGE_NAME"
+    docker pull "$IMAGE_NAME"
+    echo -e "${GREEN}✅ 镜像拉取完成${NC}"
+else
+    echo -e "${GREEN}✅ 镜像已存在${NC}"
+fi
 echo ""
 
 # 停止旧容器（如果存在）
