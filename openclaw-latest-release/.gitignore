@@ -1,0 +1,5 @@
+build-info.env
+openclaw-*.tar.gz
+.env
+openclaw_data/
+.DS_Store

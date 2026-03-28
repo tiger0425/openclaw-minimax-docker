@@ -1,0 +1,38 @@
+# OpenClaw latest release 生产环境配置
+
+services:
+  workspace-fix:
+    image: alpine:latest
+    container_name: openclaw-latest-prod-workspace-fix
+    user: root
+    volumes:
+      - ./openclaw_data/workspace:/workspace
+    command: ["sh", "-lc", "chown -R 1000:1000 /workspace"]
+
+  openclaw-gateway:
+    image: ${OPENCLAW_IMAGE_NAME}
+    container_name: openclaw-latest-prod-gateway
+    restart: unless-stopped
+    depends_on:
+      workspace-fix:
+        condition: service_completed_successfully
+    init: true
+    env_file:
+      - .env
+    environment:
+      TZ: Asia/Shanghai
+      NODE_ENV: production
+      HOME: /home/node
+      TERM: xterm-256color
+      PATH: "/home/node/.openclaw/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    volumes:
+      - ./openclaw_data:/home/node/.openclaw
+      - ./openclaw_data/workspace:/home/node/.openclaw/workspace
+    command: ["node", "openclaw.mjs", "gateway", "--bind", "loopback", "--port", "18889", "--allow-unconfigured"]
+
+  headless-shell:
+    image: chromedp/headless-shell:latest
+    container_name: openclaw-latest-prod-headless-shell
+    network_mode: "service:openclaw-gateway"
+    restart: unless-stopped
+    shm_size: "2g"
