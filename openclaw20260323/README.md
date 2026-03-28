@@ -1,5 +1,8 @@
 # OpenClaw v2026.3.23 独立测试环境
 
+> ⚠️ 该目录已归档，仅保留历史参考。
+> 当前推荐使用 `github-deploy-latest/`。
+
 ## 目录说明
 
 这个目录是完全独立的 OpenClaw 测试环境，与 `openclaw-minimax-docker` 互不干扰：
@@ -8,7 +11,7 @@
 - 独立的 Docker 卷
 - 使用 OpenClaw v2026.3.23 版本
 
-## 快速开始
+## 快速开始（历史）
 
 1. 复制环境变量模板：
    ```bash

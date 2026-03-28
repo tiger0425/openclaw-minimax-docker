@@ -20,48 +20,10 @@
 - `ssh密钥连接配置指南.md`：SSH 使用说明
 
 ### `openclaw20260323/`
-独立测试环境目录，用于测试 OpenClaw v2026.3.23。
-
-适用场景：
-- 验证新版本
-- 与主环境隔离运行
-- 测试新配置、新功能或升级方案
-
-特点：
-- 独立端口
-- 独立容器名
-- 独立 Docker 卷
-- 不影响主环境
-
-目录内主要文件：
-- `README.md`：测试环境说明
-- `DEPLOY.md`：生产部署说明
-- `.env.example`：环境变量模板
-- `docker-compose.yml`：测试环境编排
-- `docker-compose.prod.yml`：生产部署编排
-- `deploy.sh`：部署脚本
-- `export-image.sh`：导出镜像脚本
+旧的独立测试环境目录，**已归档**，保留作历史参考。
 
 ### `github-deploy/`
-云服务器部署包目录，配合阿里云容器镜像服务快速部署到国内服务器。
-
-适用场景：
-- 服务器部署（国内推荐）
-- 飞书专用生产环境
-- 无需上传大文件，自动从阿里云拉取镜像
-
-镜像地址：
-```
-registry.cn-shenzhen.aliyuncs.com/yihuzh/openclaw:v2026.3.23
-```
-
-目录内主要文件：
-- `README.md`：快速部署说明
-- `DEPLOY-GUIDE.md`：完整部署指南
-- `.env.example`：环境变量模板
-- `docker-compose.yml`：生产部署编排（使用阿里云镜像）
-- `deploy.sh`：部署脚本（自动拉取镜像）
-- `openclaw.json`：OpenClaw 配置模板
+旧的云服务器部署包目录，**已弃用**，保留仅作历史参考。
 
 ## 如何选择
 
@@ -74,8 +36,8 @@ cd openclaw-minimax-docker
 
 然后按目录内现有配置运行。
 
-### 2. 测试 v2026.3.23 独立环境
-进入：
+### 2. 旧测试环境（归档）
+如果你需要查看历史测试环境，可进入：
 
 ```bash
 cd openclaw20260323
@@ -83,9 +45,7 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-测试环境说明见：
-
-- `openclaw20260323/README.md`
+历史说明见 `openclaw20260323/README.md`。
 
 ### 3. 部署到云服务器（推荐）
 使用阿里云容器镜像服务，国内访问速度快，无需上传大文件。
@@ -93,22 +53,20 @@ docker compose up -d --build
 **快速部署：**
 
 ```bash
-# 1. 上传部署文件到服务器
-scp -r github-deploy root@你的服务器IP:/root/openclaw-deploy
+# 1. 在服务器上克隆独立部署仓库
+git clone https://github.com/tiger0425/github-deploy-latest.git /root/openclaw-deploy-latest
 
 # 2. 在服务器上配置并启动
-ssh root@你的服务器IP
-cd /root/openclaw-deploy
+cd /root/openclaw-deploy-latest
 cp .env.example .env
 vim .env  # 填入配置
 ./deploy.sh  # 自动从阿里云拉取镜像并启动
 ```
 
 **详细说明：**
-- `github-deploy/README.md` - 快速部署指南
-- `github-deploy/DEPLOY-GUIDE.md` - 完整部署和排障指南
+- https://github.com/tiger0425/github-deploy-latest
 
-**如需本地导出镜像（备用方案）：**
+**如需本地导出镜像（历史方案）：**
 在 `openclaw20260323/` 目录中使用 `export-image.sh` 导出后上传。
 
 ## 环境变量说明
@@ -131,8 +89,8 @@ cp .env.example .env
 
 当前仓库已经包含：
 - 主运行环境目录
-- v2026.3.23 独立测试环境
-- 云服务器部署包目录
+- 已归档的 v2026.3.23 测试环境
+- 已弃用的旧部署包说明
 
 如果下一步要继续推进，建议优先做：
 1. 按文档完整跑一遍部署流程
