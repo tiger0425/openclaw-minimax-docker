@@ -113,11 +113,13 @@ RUN --mount=type=cache,id=openclaw-bookworm-apt-cache,target=/var/cache/apt,shar
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       procps hostname curl git lsof openssl \
       openssh-client \
-      chromium \
       fonts-noto-cjk \
       fonts-wqy-zenhei \
       fonts-noto \
-      xvfb && \
+      xvfb || true && \
+    for attempt in 1 2 3; do \
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends chromium && break || sleep 10; \
+    done && \
     rm -rf /var/lib/apt/lists/*
 
 RUN chown node:node /app
