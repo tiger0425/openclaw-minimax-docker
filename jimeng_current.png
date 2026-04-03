@@ -1,0 +1,193 @@
+- generic [ref=e2]:
+  - generic [ref=e6]:
+    - generic [ref=e7]:
+      - menu [ref=e8]:
+        - menuitem "logo" [ref=e10] [cursor=pointer]:
+          - img "logo" [ref=e12]
+      - menu [ref=e13]:
+        - generic [ref=e14]:
+          - menuitem "灵感" [active] [ref=e15] [cursor=pointer]:
+            - generic [ref=e22]: 灵感
+          - menuitem "生成" [ref=e23] [cursor=pointer]:
+            - generic [ref=e30]: 生成
+          - menuitem "资产" [ref=e31] [cursor=pointer]:
+            - generic [ref=e38]: 资产
+          - menuitem "画布" [ref=e388] [cursor=pointer]:
+            - generic [ref=e395]: 画布
+      - menu [ref=e39]:
+        - generic [ref=e40]:
+          - menuitem [ref=e396]
+          - menuitem
+          - menuitem [ref=e397] [cursor=pointer]
+          - menuitem "登录" [ref=e399] [cursor=pointer]:
+            - generic [ref=e401]: 登录
+          - menuitem [ref=e47] [cursor=pointer]
+          - menuitem [ref=e54] [cursor=pointer]
+          - menuitem [ref=e61] [cursor=pointer]
+    - generic [ref=e72]:
+      - generic [ref=e73]:
+        - generic [ref=e75]:
+          - generic [ref=e420]:
+            - text: 开启你的
+            - generic [ref=e421]:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic: Agent 模式
+                  - generic:
+                    - generic: 图片生成
+                  - generic:
+                    - generic: 视频生成
+                  - generic:
+                    - generic: 数字人
+                  - generic:
+                    - generic: 配音生成
+                  - generic:
+                    - generic: 动作模仿
+            - text: 即刻造梦！
+          - generic [ref=e428]:
+            - textbox [ref=e451]:
+              - paragraph [ref=e452]: Seedance 2.0全能参考，上传参考、输入文字，创意无限可能
+            - generic [ref=e453]:
+              - generic [ref=e455]:
+                - combobox [ref=e456] [cursor=pointer]:
+                  - generic [ref=e459]: Agent 模式
+                - button "自动" [ref=e467] [cursor=pointer]:
+                  - generic [ref=e470]: 自动
+                - button "灵感搜索" [ref=e471] [cursor=pointer]:
+                  - generic [ref=e475]: 灵感搜索
+                - button "创意设计" [ref=e476] [cursor=pointer]:
+                  - generic [ref=e481]: 创意设计
+              - button [disabled] [ref=e484]
+          - generic:
+            - generic:
+              - button "去查看":
+                - generic: 去查看
+          - generic [ref=e122]:
+            - button "无限画布 灵感无界 · 自由创作" [ref=e487] [cursor=pointer]:
+              - generic [ref=e489]:
+                - generic:
+                  - img
+              - generic [ref=e490]:
+                - heading "无限画布" [level=3] [ref=e491]: 无限画布
+                - generic [ref=e494]: 灵感无界 · 自由创作
+            - button "图片生成 智能美学提升 4.1智能美学 即刻想象" [ref=e495] [cursor=pointer]:
+              - generic:
+                - generic:
+                  - generic:
+                    - heading "图片生成" [level=3]
+                    - generic: 智能美学提升
+                  - generic:
+                    - heading "4.1智能美学" [level=3]:
+                      - generic: 4.1智能美学
+                    - generic: 即刻想象
+            - button "视频生成 Seedance 2.0 Seedance 2.0 即刻想象" [ref=e498] [cursor=pointer]:
+              - generic:
+                - generic:
+                  - generic:
+                    - heading "视频生成" [level=3]
+                    - generic: Seedance 2.0
+                  - generic:
+                    - heading "Seedance 2.0" [level=3]:
+                      - generic: Seedance 2.0
+                    - generic: 即刻想象
+            - button "数字人 大师模式 数字人 大师模式" [ref=e501] [cursor=pointer]:
+              - generic:
+                - generic:
+                  - generic:
+                    - heading "数字人" [level=3]
+                    - generic: 大师模式
+                  - generic:
+                    - heading "数字人" [level=3]:
+                      - generic: 数字人
+                    - generic: 大师模式
+            - button "配音生成 声临其境 配音生成 声临其境" [ref=e504] [cursor=pointer]:
+              - generic:
+                - generic:
+                  - generic:
+                    - heading "配音生成" [level=3]
+                    - generic: 声临其境
+                  - generic:
+                    - heading "配音生成" [level=3]:
+                      - generic: 配音生成
+                    - generic: 声临其境
+        - generic [ref=e148]:
+          - generic [ref=e150]:
+            - generic [ref=e152]:
+              - tab "发现" [selected] [ref=e153] [cursor=pointer]:
+                - generic [ref=e155]: 发现
+              - tab "短片" [ref=e156] [cursor=pointer]:
+                - generic [ref=e158]: 短片
+              - tab "活动" [ref=e159] [cursor=pointer]:
+                - generic [ref=e161]: 活动
+            - textbox "背景" [ref=e508]
+          - tabpanel "发现" [ref=e178]:
+            - generic [ref=e181]:
+              - generic [ref=e183]:
+                - generic [ref=e184]:
+                  - generic [ref=e510] [cursor=pointer]:
+                    - img [ref=e512]
+                    - generic [ref=e514]:
+                      - paragraph [ref=e515]: 大学生广告艺术节学院奖 即梦AI青年创意大赛（视频类）
+                      - paragraph [ref=e516]:
+                        - text: 已有
+                        - generic [ref=e517]: "110"
+                        - text: 人参与
+                  - generic [ref=e652] [cursor=pointer]:
+                    - img [ref=e654]
+                    - paragraph [ref=e657]: 即梦AI 创作者成长计划 · 新视觉
+                  - generic [ref=e205] [cursor=pointer]:
+                    - img [ref=e207]
+                    - paragraph [ref=e211]: 即梦AI 创作者成长计划 · 新影像
+                - generic:
+                  - button "上一个" [ref=e212] [cursor=pointer]
+                  - button "下一个" [ref=e215] [cursor=pointer]
+              - img [ref=e228] [cursor=pointer]
+              - img [ref=e233] [cursor=pointer]
+              - img [ref=e238] [cursor=pointer]
+              - img [ref=e243] [cursor=pointer]
+              - img [ref=e248] [cursor=pointer]
+              - img [ref=e253] [cursor=pointer]
+              - img [ref=e258] [cursor=pointer]
+              - img [ref=e263] [cursor=pointer]
+              - img [ref=e268] [cursor=pointer]
+              - img [ref=e273] [cursor=pointer]
+              - img [ref=e279] [cursor=pointer]
+              - img [ref=e288] [cursor=pointer]
+              - img [ref=e294] [cursor=pointer]
+              - img [ref=e300] [cursor=pointer]
+              - img [ref=e306] [cursor=pointer]
+              - img [ref=e313] [cursor=pointer]
+              - img [ref=e322] [cursor=pointer]
+              - img [ref=e328] [cursor=pointer]
+              - img [ref=e334] [cursor=pointer]
+              - img [ref=e340] [cursor=pointer]
+              - img [ref=e522] [cursor=pointer]
+              - img [ref=e528] [cursor=pointer]
+              - img [ref=e534] [cursor=pointer]
+              - img [ref=e541] [cursor=pointer]
+              - img [ref=e550] [cursor=pointer]
+              - img [ref=e556] [cursor=pointer]
+              - img [ref=e562] [cursor=pointer]
+              - img [ref=e568] [cursor=pointer]
+              - img [ref=e575] [cursor=pointer]
+              - img [ref=e584] [cursor=pointer]
+      - generic [ref=e587]:
+        - generic [ref=e588]:
+          - textbox [ref=e610]:
+            - paragraph [ref=e611]: Seedance 2.0全能参考，上传参考、输入文字，创意无限可能
+          - button [disabled] [ref=e612]
+        - generic [ref=e617]:
+          - combobox [ref=e618] [cursor=pointer]:
+            - generic [ref=e621]: Agent 模式
+          - button "自动" [ref=e629] [cursor=pointer]:
+            - generic [ref=e632]: 自动
+          - button "灵感搜索" [ref=e633] [cursor=pointer]:
+            - generic [ref=e637]: 灵感搜索
+          - button "创意设计" [ref=e638] [cursor=pointer]:
+            - generic [ref=e643]: 创意设计
+      - generic:
+        - generic:
+          - button "去查看":
+            - generic: 去查看
+  - status [ref=e387]
