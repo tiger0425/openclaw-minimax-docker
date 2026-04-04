@@ -18,6 +18,12 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
+if [ ! -f openclaw.json ]; then
+    echo "❌ 未找到 openclaw.json"
+    echo "请确认部署目录中包含版本化的网关配置文件"
+    exit 1
+fi
+
 docker --version >/dev/null 2>&1 || { echo "❌ Docker 未安装"; exit 1; }
 if ! command -v docker-compose >/dev/null 2>&1 && ! docker compose version >/dev/null 2>&1; then
     echo "❌ Docker Compose 未安装"

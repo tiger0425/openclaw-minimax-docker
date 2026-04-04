@@ -1,0 +1,26 @@
+{
+  "gateway": {
+    "mode": "local",
+    "controlUi": {
+      "dangerouslyAllowHostHeaderOriginFallback": true
+    }
+  },
+  "plugins": {
+    "allow": [
+      "pinchtab"
+    ],
+    "entries": {
+      "pinchtab": {
+        "enabled": true,
+        "config": {
+          "baseUrl": "http://pinchtab:9867",
+          "token": "",
+          "timeout": 30000
+        }
+      },
+      "browser": {
+        "enabled": false
+      }
+    }
+  }
+}
