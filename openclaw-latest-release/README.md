@@ -44,8 +44,10 @@ export ACR_PASSWORD=你的阿里云镜像仓库密码
 
 ```bash
 cp .env.example .env
-docker compose --env-file build-info.env up -d
+docker compose --env-file .env --env-file build-info.env up -d
 ```
+
+这里同时传入 `.env` 和 `build-info.env`：前者承载网关令牌、PinchTab、OpenSpace、Qwen 等运行时配置，后者承载本次构建解析出的镜像版本信息。
 
 ### 4. 服务器部署
 
@@ -101,6 +103,55 @@ PINCHTAB_URL=http://192.168.101.245:9867
 这套目录里的 compose 和 `openclaw.json` 现在已经默认启用 `pinchtab` 插件，并关闭旧的 `browser` 路径；如果 PinchTab 开了鉴权，把 `PINCHTAB_TOKEN` 一并写进 `.env`。
 
 注意：虽然 PinchTab 容器已经改为直接拉取镜像，但 `openclaw-gateway` 仍会通过 `../pinchtab/plugin` 挂载本地插件源码并在启动时执行 `plugins install`，因此这个插件目录当前仍需保留。
+
+### OpenSpace 自进化引擎集成
+
+Compose 现在同时启动 `openclaw-gateway`、`pinchtab` 和 `openspace` 三个容器。OpenSpace 作为 MCP 服务器接入 OpenClaw 的 `mcporter` 运行时，让 agent 获得**技能自进化**和**云端技能共享**能力。
+
+**启动流程**（自动完成，无需手动操作）：
+1. 容器启动时自动安装 OpenSpace Python 包
+2. 复制 `delegate-task` 和 `skill-discovery` 两个 host skill 到 OpenClaw 技能目录
+3. 通过 `mcporter config add openspace` 注册 MCP 服务器
+4. 启动 OpenClaw 网关
+
+**环境变量**（在 `.env` 中配置）：
+
+```bash
+# OpenSpace 云端技能库 Key（可选，不填则仅使用本地技能）
+OPENSPACE_API_KEY=sk-xxx
+
+# 镜像地址（默认已指向阿里云 ACR）
+OPENSPACE_IMAGE_NAME=registry.cn-shenzhen.aliyuncs.com/yihuzh/openspace:0.1.0
+```
+
+### Qwen 3.6 Plus（阿里百炼 / DashScope）接入
+
+这套发布目录现在支持通过 OpenSpace 的 LiteLLM 配置把 `qwen3.6-plus` 接进 OpenClaw。最小配置方式是在 `.env` 中填写 OpenSpace 的 LLM 覆盖变量：
+
+```bash
+# 推荐：通过 DashScope OpenAI-compatible 接口使用 qwen3.6-plus
+OPENSPACE_MODEL=openai/qwen3.6-plus
+OPENSPACE_LLM_API_KEY=sk-xxx
+OPENSPACE_LLM_API_BASE=https://dashscope.aliyuncs.com/compatible-mode/v1
+```
+
+说明：
+- `openai/` 前缀是 LiteLLM 在自定义 OpenAI-compatible endpoint 下的保守写法；默认示例已按这个格式提供。
+- 上面这个北京站点地址来自阿里百炼官方文档；如果你使用国际站或美国站，请把 `OPENSPACE_LLM_API_BASE` 改成对应区域的兼容接口地址。
+- 这条路径下通常**不需要**再填写 `OPENAI_API_KEY`；直接把阿里百炼的 Key 写到 `OPENSPACE_LLM_API_KEY` 即可。
+- 如果后续需要自定义请求头或 LiteLLM 参数，可以再补：`OPENSPACE_LLM_EXTRA_HEADERS`、`OPENSPACE_LLM_CONFIG`（都填 JSON 字符串）。
+
+更新 `.env` 后，重新执行 `docker compose --env-file build-info.env up -d`，OpenClaw 在启动时会把这些变量一并透传给 OpenSpace MCP。
+
+**集成效果**：
+- OpenClaw agent 可自动搜索、复用和进化技能
+- 成功的工作流会被捕获为可复用技能
+- 失败的技能会自动修复（FIX / DERIVED / CAPTURED）
+- 通过云端社区可共享和发现其他 agent 进化的技能
+
+**前置条件**：
+- 需要 `../openspace` 目录存在 OpenSpace 源码（用于启动时安装 Python 包）
+- 如果不需要 OpenSpace 集成，可以注释掉 compose 中的 `openspace` 服务块
 
 ### 常见问题
 

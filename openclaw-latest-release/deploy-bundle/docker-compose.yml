@@ -1,7 +1,10 @@
+# OpenClaw 远程部署配置
+# 所有镜像从阿里云 ACR 拉取，无需本地构建
+
 services:
   workspace-fix:
     image: alpine:latest
-    container_name: openclaw-latest-workspace-fix
+    container_name: openclaw-workspace-fix
     user: root
     volumes:
       - ./openclaw_data/workspace:/workspace
@@ -9,10 +12,8 @@ services:
 
   pinchtab:
     image: ${PINCHTAB_IMAGE_NAME:-registry.cn-shenzhen.aliyuncs.com/yihuzh/pinchtab:latest}
-    container_name: openclaw-latest-pinchtab
+    container_name: openclaw-pinchtab
     restart: unless-stopped
-    ports:
-      - "9867:9867"
     environment:
       PINCHTAB_TOKEN: ${PINCHTAB_TOKEN:-}
     volumes:
@@ -36,7 +37,7 @@ services:
 
   openspace:
     image: ${OPENSPACE_IMAGE_NAME:-registry.cn-shenzhen.aliyuncs.com/yihuzh/openspace:0.1.0}
-    container_name: openclaw-latest-openspace
+    container_name: openclaw-openspace
     restart: unless-stopped
     environment:
       OPENSPACE_API_KEY: ${OPENSPACE_API_KEY:-}
@@ -54,7 +55,7 @@ services:
 
   openclaw-gateway:
     image: ${OPENCLAW_IMAGE_NAME:-registry.cn-shenzhen.aliyuncs.com/yihuzh/openclaw:latest}
-    container_name: openclaw-latest-gateway
+    container_name: openclaw-gateway
     restart: unless-stopped
     depends_on:
       workspace-fix:
@@ -79,10 +80,9 @@ services:
     volumes:
       - ./openclaw_data:/home/node/.openclaw
       - ./openclaw.json:/home/node/.openclaw/openclaw.json:ro
-      - ${HOME}/.ssh:/home/node/.ssh:ro
       - ./openclaw_data/workspace:/home/node/.openclaw/workspace
-      - ../pinchtab/plugin:/opt/openclaw-local-plugins/pinchtab-src:ro
-      - ../openspace:/opt/openspace-src:ro
+      - ./pinchtab-plugin:/opt/openclaw-local-plugins/pinchtab-src:ro
+      - ./openspace-host-skills:/opt/openspace-host-skills:ro
       - openspace-skills:/home/node/.openclaw/skills
       - openspace-workspace:/opt/openspace
     ports:
@@ -93,8 +93,12 @@ services:
       [
         "sh",
         "-lc",
-        "pip install -q -e /opt/openspace-src 2>/dev/null; cp -rn /opt/openspace-src/openspace/host_skills/* /home/node/.openclaw/skills/ 2>/dev/null; mcporter config add openspace --command 'openspace-mcp' --env OPENSPACE_HOST_SKILL_DIRS=/home/node/.openclaw/skills --env OPENSPACE_WORKSPACE=/opt/openspace --env OPENSPACE_API_KEY=\"$OPENSPACE_API_KEY\" --env OPENSPACE_MODEL=\"$OPENSPACE_MODEL\" --env OPENSPACE_LLM_API_KEY=\"$OPENSPACE_LLM_API_KEY\" --env OPENSPACE_LLM_API_BASE=\"$OPENSPACE_LLM_API_BASE\" --env OPENSPACE_LLM_EXTRA_HEADERS=\"$OPENSPACE_LLM_EXTRA_HEADERS\" --env OPENSPACE_LLM_CONFIG=\"$OPENSPACE_LLM_CONFIG\" 2>/dev/null; node openclaw.mjs plugins install /opt/openclaw-local-plugins/pinchtab-src && exec node openclaw.mjs gateway --bind lan --port 18889 --allow-unconfigured",
+        "cp -rn /opt/openspace-host-skills/* /home/node/.openclaw/skills/ 2>/dev/null; mcporter config add openspace --command 'openspace-mcp' --env OPENSPACE_HOST_SKILL_DIRS=/home/node/.openclaw/skills --env OPENSPACE_WORKSPACE=/opt/openspace --env OPENSPACE_API_KEY=\"$OPENSPACE_API_KEY\" --env OPENSPACE_MODEL=\"$OPENSPACE_MODEL\" --env OPENSPACE_LLM_API_KEY=\"$OPENSPACE_LLM_API_KEY\" --env OPENSPACE_LLM_API_BASE=\"$OPENSPACE_LLM_API_BASE\" --env OPENSPACE_LLM_EXTRA_HEADERS=\"$OPENSPACE_LLM_EXTRA_HEADERS\" --env OPENSPACE_LLM_CONFIG=\"$OPENSPACE_LLM_CONFIG\" 2>/dev/null; node openclaw.mjs plugins install /opt/openclaw-local-plugins/pinchtab-src && exec node openclaw.mjs gateway --bind ${OPENCLAW_BIND:-lan} --port 18889 --allow-unconfigured",
       ]
+
+networks:
+  default:
+    driver: bridge
 
 volumes:
   pinchtab-data:
