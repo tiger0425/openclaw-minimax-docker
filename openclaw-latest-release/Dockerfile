@@ -55,6 +55,7 @@ WORKDIR /app
 COPY --from=source /source/package.json /source/pnpm-lock.yaml /source/pnpm-workspace.yaml /source/.npmrc ./
 COPY --from=source /source/ui/package.json ./ui/package.json
 COPY --from=source /source/patches ./patches
+COPY --from=source /source/scripts ./scripts
 COPY --from=ext-deps /out/ ./extensions/
 
 RUN --mount=type=cache,id=openclaw-pnpm-store,target=/root/.local/share/pnpm/store,sharing=locked \
