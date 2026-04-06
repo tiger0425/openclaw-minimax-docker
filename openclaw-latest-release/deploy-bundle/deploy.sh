@@ -30,13 +30,37 @@ if ! command -v docker-compose >/dev/null 2>&1 && ! docker compose version >/dev
 fi
 
 # ── 检查必要目录 ─────────────────────────────────────────────
-for dir in pinchtab-plugin openspace-host-skills; do
+for dir in pinchtab-plugin openspace-host-skills .venv-openspace; do
     if [ ! -d "$dir" ]; then
         echo "❌ 缺少必要目录: $dir"
         echo "请确认部署包完整"
         exit 1
     fi
 done
+
+if [ ! -x .venv-openspace/bin/openspace-mcp ]; then
+    echo "❌ 未找到可执行的 .venv-openspace/bin/openspace-mcp"
+    echo "请先在宿主机准备与 gateway 兼容的 OpenSpace venv"
+    exit 1
+fi
+
+if [ -L .venv-openspace/bin/python3 ]; then
+    echo "❌ .venv-openspace/bin/python3 当前是符号链接"
+    echo "请使用 python3 -m venv --copies .venv-openspace 重新创建，避免容器内解释器路径失效"
+    exit 1
+fi
+
+if [ ! -f .venv-openspace/lib/libpython3.12.so.1.0 ]; then
+    echo "❌ 缺少 .venv-openspace/lib/libpython3.12.so.1.0"
+    echo "请运行 ./rebuild-openspace-venv.sh 重新构建 OpenSpace venv"
+    exit 1
+fi
+
+if [ ! -d .venv-openspace/lib/python3.12 ]; then
+    echo "❌ 缺少 .venv-openspace/lib/python3.12 标准库目录"
+    echo "请运行 ./rebuild-openspace-venv.sh 重新构建 OpenSpace venv"
+    exit 1
+fi
 
 # ── 检查环境变量 ─────────────────────────────────────────────
 if ! grep -q '^OPENCLAW_GATEWAY_TOKEN=' .env; then
@@ -74,7 +98,7 @@ fi
 echo ""
 echo "🚀 启动服务..."
 "${COMPOSE_CMD[@]}" down 2>/dev/null || true
-"${COMPOSE_CMD[@]}" up -d
+"${COMPOSE_CMD[@]}" up -d --remove-orphans
 
 echo ""
 echo "✅ 部署完成"

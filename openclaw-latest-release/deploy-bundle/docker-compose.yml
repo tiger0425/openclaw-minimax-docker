@@ -43,26 +43,6 @@ services:
       timeout: 5s
       retries: 12
 
-  openspace:
-    image: ${OPENSPACE_IMAGE_NAME:-registry.cn-shenzhen.aliyuncs.com/yihuzh/openspace:0.1.0}
-    container_name: openclaw-openspace
-    restart: unless-stopped
-    stdin_open: true
-    tty: true
-    environment:
-      OPENSPACE_API_KEY: ${OPENSPACE_API_KEY:-}
-      OPENSPACE_HOST_SKILL_DIRS: /home/node/.openclaw/skills
-      OPENSPACE_WORKSPACE: /opt/openspace
-      OPENSPACE_MODEL: ${OPENSPACE_MODEL:-}
-      OPENSPACE_LLM_API_KEY: ${OPENSPACE_LLM_API_KEY:-}
-      OPENSPACE_LLM_API_BASE: ${OPENSPACE_LLM_API_BASE:-}
-      OPENSPACE_LLM_EXTRA_HEADERS: ${OPENSPACE_LLM_EXTRA_HEADERS:-}
-      OPENSPACE_LLM_CONFIG: ${OPENSPACE_LLM_CONFIG:-}
-    volumes:
-      - openspace-skills:/home/node/.openclaw/skills
-      - openspace-workspace:/opt/openspace
-    command: ["openspace-mcp"]
-
   openclaw-gateway:
     image: ${OPENCLAW_IMAGE_NAME:-registry.cn-shenzhen.aliyuncs.com/yihuzh/openclaw:latest}
     container_name: openclaw-gateway
@@ -74,8 +54,6 @@ services:
         condition: service_completed_successfully
       pinchtab:
         condition: service_healthy
-      openspace:
-        condition: service_started
     init: true
     env_file:
       - .env
@@ -86,6 +64,7 @@ services:
       TERM: xterm-256color
       OPENCLAW_ALLOW_INSECURE_PRIVATE_WS: "true"
       OPENCLAW_GATEWAY_PORT: "18889"
+      LD_LIBRARY_PATH: "/data/openclaw-deploy-latest/.venv-openspace/lib"
       PATH: "/home/node/.openclaw/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       PINCHTAB_URL: ${PINCHTAB_URL:-http://pinchtab:9867}
       PINCHTAB_TOKEN: ${PINCHTAB_TOKEN:-}
@@ -97,6 +76,9 @@ services:
       - ./pinchtab-plugin:/opt/openclaw-local-plugins/pinchtab-src:ro
       - ./skill:/home/node/.openclaw/extensions/skill:ro
       - ./openspace-host-skills:/opt/openspace-host-skills:ro
+      - ./.venv-openspace:/data/openclaw-deploy-latest/.venv-openspace
+      - ./.venv-openspace/lib/python3.12:/usr/local/lib/python3.12:ro
+      - ./.venv-openspace/lib/libpython3.12.so.1.0:/usr/local/lib/libpython3.12.so.1.0:ro
       - openspace-skills:/home/node/.openclaw/skills
       - openspace-workspace:/opt/openspace
     ports:
@@ -107,7 +89,7 @@ services:
       [
         "sh",
         "-lc",
-        "cp -rn /opt/openspace-host-skills/* /home/node/.openclaw/skills/ 2>/dev/null; npx -y mcporter config add openspace --command 'openspace-mcp' --env OPENSPACE_HOST_SKILL_DIRS=/home/node/.openclaw/skills --env OPENSPACE_WORKSPACE=/opt/openspace --env OPENSPACE_API_KEY=\"$OPENSPACE_API_KEY\" --env OPENSPACE_MODEL=\"$OPENSPACE_MODEL\" --env OPENSPACE_LLM_API_KEY=\"$OPENSPACE_LLM_API_KEY\" --env OPENSPACE_LLM_API_BASE=\"$OPENSPACE_LLM_API_BASE\" --env OPENSPACE_LLM_EXTRA_HEADERS=\"$OPENSPACE_LLM_EXTRA_HEADERS\" --env OPENSPACE_LLM_CONFIG=\"$OPENSPACE_LLM_CONFIG\" 2>/dev/null; node openclaw.mjs plugins install /opt/openclaw-local-plugins/pinchtab-src >/dev/null 2>&1 || true; exec node openclaw.mjs gateway --bind ${OPENCLAW_BIND:-lan} --port 18889 --allow-unconfigured",
+        "cp -rn /opt/openspace-host-skills/* /home/node/.openclaw/skills/ 2>/dev/null; npx -y mcporter config add openspace --command '/data/openclaw-deploy-latest/.venv-openspace/bin/openspace-mcp' --env OPENSPACE_HOST_SKILL_DIRS=/home/node/.openclaw/skills --env OPENSPACE_WORKSPACE=/opt/openspace --env OPENSPACE_API_KEY=\"$OPENSPACE_API_KEY\" --env OPENSPACE_MODEL=\"$OPENSPACE_MODEL\" --env OPENSPACE_LLM_API_KEY=\"$OPENSPACE_LLM_API_KEY\" --env OPENSPACE_LLM_API_BASE=\"$OPENSPACE_LLM_API_BASE\" --env OPENSPACE_LLM_EXTRA_HEADERS=\"$OPENSPACE_LLM_EXTRA_HEADERS\" --env OPENSPACE_LLM_CONFIG=\"$OPENSPACE_LLM_CONFIG\" 2>/dev/null; node openclaw.mjs plugins install /opt/openclaw-local-plugins/pinchtab-src >/dev/null 2>&1 || true; exec node openclaw.mjs gateway --bind ${OPENCLAW_BIND:-lan} --port 18889 --allow-unconfigured",
       ]
 
 networks:
