@@ -52,10 +52,13 @@ chmod 755 openclaw_data/workspace
 
 # ── 拉取最新镜像 ─────────────────────────────────────────────
 echo "📥 拉取最新镜像..."
-if command -v docker-compose >/dev/null 2>&1; then
+if docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD=(docker compose -f "$COMPOSE_FILE")
+elif command -v docker-compose >/dev/null 2>&1; then
     COMPOSE_CMD=(docker-compose -f "$COMPOSE_FILE")
 else
-    COMPOSE_CMD=(docker compose -f "$COMPOSE_FILE")
+    echo "❌ Docker Compose 未安装"
+    exit 1
 fi
 
 "${COMPOSE_CMD[@]}" pull || {

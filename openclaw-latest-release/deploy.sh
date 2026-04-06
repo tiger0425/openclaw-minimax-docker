@@ -49,22 +49,31 @@ chmod 755 openclaw_data
 chmod 755 openclaw_data/workspace
 
 if ! docker image inspect "$IMAGE_NAME" >/dev/null 2>&1; then
-    echo "❌ 镜像 ${IMAGE_NAME} 不存在"
-    echo "请先导入镜像，例如："
-    echo "  gunzip -c openclaw-${OPENCLAW_VERSION}.tar.gz | docker load"
-    exit 1
+    if [ -n "${ACR_VERSION_IMAGE:-}" ]; then
+        echo "ℹ️ 本地镜像不存在，尝试从 ACR 拉取 ${ACR_VERSION_IMAGE}"
+        docker pull "$ACR_VERSION_IMAGE"
+        export OPENCLAW_IMAGE_NAME="$ACR_VERSION_IMAGE"
+    else
+        echo "❌ 镜像 ${IMAGE_NAME} 不存在"
+        echo "请先导入镜像，例如："
+        echo "  gunzip -c openclaw-${OPENCLAW_VERSION}.tar.gz | docker load"
+        exit 1
+    fi
+else
+    export OPENCLAW_IMAGE_NAME="${OPENCLAW_IMAGE_NAME:-$IMAGE_NAME}"
 fi
-
-export OPENCLAW_IMAGE_NAME="${OPENCLAW_IMAGE_NAME:-$IMAGE_NAME}"
 
 echo "🦞 部署 OpenClaw ${OPENCLAW_VERSION}"
 echo "镜像: ${OPENCLAW_IMAGE_NAME}"
 echo ""
 
-if command -v docker-compose >/dev/null 2>&1; then
+if docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD=(docker compose -f "$COMPOSE_FILE")
+elif command -v docker-compose >/dev/null 2>&1; then
     COMPOSE_CMD=(docker-compose -f "$COMPOSE_FILE")
 else
-    COMPOSE_CMD=(docker compose -f "$COMPOSE_FILE")
+    echo "❌ Docker Compose 未安装"
+    exit 1
 fi
 
 "${COMPOSE_CMD[@]}" down 2>/dev/null || true
