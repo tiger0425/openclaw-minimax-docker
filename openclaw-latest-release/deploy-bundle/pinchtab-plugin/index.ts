@@ -19,14 +19,12 @@ interface PluginApi {
 
 function getConfig(api: PluginApi): PluginConfig {
   const cfg = api.config?.plugins?.entries?.pinchtab?.config ?? {};
-  const envTimeout = Number.parseInt(process.env.PINCHTAB_TIMEOUT_MS ?? "", 10);
 
   return {
-    baseUrl: process.env.PINCHTAB_URL || cfg.baseUrl || "http://localhost:9867",
-    token: process.env.PINCHTAB_TOKEN || cfg.token,
-    timeout: Number.isFinite(envTimeout) ? envTimeout : cfg.timeout || 30000,
-    apiVersion:
-      process.env.PINCHTAB_API_VERSION || cfg.apiVersion || "application/vnd.pinch.v1+json",
+    baseUrl: cfg.baseUrl || "http://localhost:9867",
+    token: cfg.token,
+    timeout: cfg.timeout || 30000,
+    apiVersion: cfg.apiVersion || "application/vnd.pinch.v1+json",
   };
 }
 
