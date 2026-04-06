@@ -68,6 +68,8 @@ gunzip -c openclaw-<版本>.tar.gz | docker load
 ./deploy.sh
 ```
 
+> 注意：如果目标机器是 `192.168.101.245`，实际应使用 `deploy-bundle/` 目录里的 `deploy.sh` 和 `docker-compose.yml` 作为唯一线上入口，不要改用本目录下的 `docker-compose.prod.yml`。后者适合源码侧部署，不适合当前这台已验证服务器的部署结构。
+
 ## 网络配置
 
 生产 compose 默认使用 `OPENCLAW_BIND=lan`，并暴露以下端口：`18889`、`18890`、`19222`。
@@ -158,6 +160,15 @@ OPENSPACE_LLM_API_BASE=https://dashscope.aliyuncs.com/compatible-mode/v1
 - 宿主机无法访问服务：先确认 `docker-compose.prod.yml` 已暴露 `18889`，再检查系统防火墙。
 - 容器无法解析宿主机：优先确认 Docker 版本是否支持 `host-gateway`，不行就设置 `HOST_IP`。
 - 想临时收紧访问范围：把 `OPENCLAW_BIND` 改成 `loopback`，再重启容器。
+
+## 部署问题速记
+
+这套目录在真实服务器部署时踩过的坑，已经在 `deploy-bundle/README.md` 里整理成完整排障清单。这里先记最关键的几条：
+
+- **服务器优先用 `docker compose` 插件版**：旧的 `docker-compose` Python 入口在某些机器上会因为缺少 `distutils` 直接失败。
+- **不要用精简版 `openclaw.json` 覆盖线上根配置**：根目录 `openclaw.json` 是网关真正 bind mount 进去的配置，里面必须保留 `models`、`channels.feishu`、`plugins` 等完整段。
+- **PinchTab 相关问题通常集中在三处**：插件是否被安全扫描拦截、`PINCHTAB_TOKEN` 是否一致、目标域名是否在 PinchTab 的 `security.idpi.allowedDomains` 里。
+- **如果 PinchTab 容器反复重启**：先检查 `/data/.config/pinchtab/config.json` 是否被写成带 BOM 的 UTF-8；PinchTab 读取 BOM JSON 会直接报 `invalid character 'ï'`。
 
 ### 5. 生成的文件
 

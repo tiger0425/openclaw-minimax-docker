@@ -60,7 +60,7 @@ cp -r host_skills/delegate-task/ /path/to/openclaw/skills/
 openclaw uses [mcporter](https://github.com/steipete/mcporter) as its MCP runtime. Register the server and pass env vars in one command:
 
 ```bash
-mcporter config add openspace --command "openspace-mcp" \
+mcporter config add openspace --command "/data/openclaw-deploy-latest/.venv-openspace/bin/openspace-mcp" \
   --env OPENSPACE_HOST_SKILL_DIRS=/path/to/openclaw/skills \
   --env OPENSPACE_WORKSPACE=/path/to/OpenSpace \
   --env OPENSPACE_API_KEY=sk-xxx
